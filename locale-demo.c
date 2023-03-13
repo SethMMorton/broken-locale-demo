@@ -14,10 +14,8 @@ void compare_demo() {
     const wchar_t* wA = L"A";
 
     // Show comparison results for standard char
-    const size_t a_size = strxfrm(NULL, a, 0);
-    const size_t A_size = strxfrm(NULL, A, 0);
-    char xa[1 + a_size];
-    char xA[1 + A_size];
+    char xa[1000] = {'\0'};
+    char xA[1000] = {'\0'};
     strxfrm(xa, a, sizeof xa/sizeof *xa);
     strxfrm(xA, A, sizeof xA/sizeof *xA);
     printf("strcmp(\"a\", \"A\"): %d\n", strcmp(a, A));
@@ -27,8 +25,8 @@ void compare_demo() {
     // Show comparison results for wide char
     const size_t wa_size = wcsxfrm(NULL, wa, 0);
     const size_t wA_size = wcsxfrm(NULL, wA, 0);
-    wchar_t xwa[1 + wa_size];
-    wchar_t xwA[1 + wA_size];
+    wchar_t xwa[1000] = {L'\0'};
+    wchar_t xwA[1000] = {L'\0'};
     wcsxfrm(xwa, wa, sizeof xwa/sizeof *xwa);
     wcsxfrm(xwA, wA, sizeof xwA/sizeof *xwA);
     printf("wcscmp(\"a\", \"A\"): %d\n", wcscmp(wa, wA));
@@ -51,7 +49,7 @@ int main() {
     // Demonstrate that transform fails on angstrom symbol
     const wchar_t* angstrom = L"\xc3\x85";
     errno = 0;
-    wchar_t xangstrom[1 + wcsxfrm(NULL, angstrom, 0)];
+    wchar_t xangstrom[1000] = {L'\0'};
     if (errno != 0) {
         perror("wcsxfrm allocation failed on angstrom symbol");
     }
