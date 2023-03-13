@@ -25,7 +25,7 @@ jobs:
       - name: Build and Run
         run: |
           cmake -S . -B build
-          cmake --build build
+          cmake --build build --verbose
           ./build/locale-demo
 
   test-bsd:
