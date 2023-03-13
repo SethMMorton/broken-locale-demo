@@ -1,0 +1,48 @@
+name: Tests
+
+# Only run on branches (e.g. not tags)
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Note, clang is used on macos, even though it says gcc
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build and Run
+        run: |
+          cmake -S . -B build
+          cmake --build build
+          ./build/locale-demo
+
+  test-bsd:
+    name: Test on FreeBSD
+    runs-on: macos-12
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install and Run Tests
+        uses: vmactions/freebsd-vm@v0
+        with:
+          prepare: |
+            pkg install -y cmake
+
+          run: |
+            cmake -S . -B build
+            cmake --build build
+            ./build/locale-demo
