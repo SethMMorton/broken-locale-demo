@@ -26,7 +26,7 @@ jobs:
         run: |
           cmake -S . -B build
           cmake --build build
-          ./build/locale-demo
+          cmake --build build --target test
 
   test-bsd:
     name: Test on FreeBSD
@@ -41,8 +41,9 @@ jobs:
         with:
           prepare: |
             pkg install -y cmake
+            pkg install -y python3
 
           run: |
             cmake -S . -B build
             cmake --build build
-            ./build/locale-demo
+            cmake --build build --target test
