@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 
-constexpr std::ssize_t MAXLEN = 1000;
+constexpr std::size_t MAXLEN = 1000;
 
 // Unified char/wchar interface for xfrm functions
 template <typename T>
