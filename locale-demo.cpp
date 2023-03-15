@@ -113,6 +113,9 @@ TEST_F(BrokenLocaleDemo, AngstromSymbol_EN_US_UTF8) {
 
     // There should have been no error with the transformation
     EXPECT_EQ(errno, 0);
+    if (errno != 0) {
+        std::cerr << "Error number means: " << ::strerror(errno) << std::endl;;
+    }
 
     // The transformation should have done something
     EXPECT_STRNE(angstrom, xfrm_angstrom);
