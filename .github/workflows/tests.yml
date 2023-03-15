@@ -26,7 +26,7 @@ jobs:
       - name: Build and Run
         run: |
           cmake -S . -B build
-          cmake --build build
+          cmake --build build --target locale-demo
           cmake --build build --target test CTEST_OUTPUT_ON_FAILURE=1
 
   test-bsd:
@@ -46,5 +46,5 @@ jobs:
 
           run: |
             cmake -S . -B build
-            cmake --build build
+            cmake --build build --target locale-demo
             cmake --build build --target test CTEST_OUTPUT_ON_FAILURE=1

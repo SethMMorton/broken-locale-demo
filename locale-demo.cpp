@@ -109,7 +109,7 @@ TEST_F(BrokenLocaleDemo, AngstromSymbol_EN_US_UTF8) {
 
     // Get the transformed value of angstrom
     wchar_t xfrm_angstrom[MAXLEN] = {L'\0'};
-    wcsxfrm(xfrm_angstrom, angstrom, sizeof xfrm_angstrom/sizeof *xfrm_angstrom);
+    ::wcsxfrm(xfrm_angstrom, angstrom, sizeof xfrm_angstrom/sizeof *xfrm_angstrom);
 
     // There should have been no error with the transformation
     EXPECT_EQ(errno, 0);
