@@ -89,7 +89,7 @@ TEST_F(BrokenLocaleDemo, XfrmCollate_C) {
 
 
 TEST_F(BrokenLocaleDemo, XfrmCollate_locale) {
-    ::setlocale(LC_ALL, "en_US.UTF8");
+    ::setlocale(LC_ALL, "en_US.UTF-8");
 
     // "a" compares greater than "A" without locale
     EXPECT_GT(compare("a", "A"), 0);
@@ -104,7 +104,7 @@ TEST_F(BrokenLocaleDemo, XfrmCollate_locale) {
 
 
 TEST_F(BrokenLocaleDemo, AngstromSymbol_EN_US_UTF8) {
-    ::setlocale(LC_ALL, "en_US.UTF8");
+    ::setlocale(LC_ALL, "en_US.UTF-8");
     const wchar_t* angstrom = L"\xc3\x85";
 
     // Get the transformed value of angstrom
