@@ -9,6 +9,7 @@
 #include <cwchar>
 #include <iostream>
 #include <type_traits>
+#include <utility>
 
 #include <gtest/gtest.h>
 
@@ -70,10 +71,17 @@ protected:
         // Set locale to "C"
         ::setlocale(LC_ALL, "C");
     }
-    virtual ~BrokenLocaleDemo() override {
+    virtual ~BrokenLocaleDemo() {
         // Reset locale to "C"
         ::setlocale(LC_ALL, "C");
     }
+};
+
+
+class BrokenLocaleDemoParam : public BrokenLocaleDemo, public testing::WithParamInterface<std::pair<const char*, const wchar_t*>> {
+protected:
+    BrokenLocaleDemoParam() : BrokenLocaleDemo() { }
+    virtual ~BrokenLocaleDemoParam() = default;
 };
 
 
@@ -103,13 +111,14 @@ TEST_F(BrokenLocaleDemo, XfrmCollate_locale) {
 }
 
 
-TEST_F(BrokenLocaleDemo, Errorno_EN_US_UTF8) {
-    ::setlocale(LC_ALL, "en_US.UTF8");  // This is an invalid locale string
-    const wchar_t* a = L"\xc3\x85";
+TEST_P(BrokenLocaleDemoParam, Errno) {
+    ::setlocale(LC_ALL, GetParam().first);  // This is an invalid locale string
+    const wchar_t* x = GetParam().second;
+    // const wchar_t* x = L"\xc3\x85";
 
     // Get the transformed value of "a"
-    wchar_t xfrm_a[MAXLEN] = {L'\0'};
-    ::wcsxfrm(xfrm_a, a, sizeof xfrm_a/sizeof *xfrm_a);
+    wchar_t xfrm_x[MAXLEN] = {L'\0'};
+    ::wcsxfrm(xfrm_x, x, sizeof xfrm_x/sizeof *xfrm_x);
 
     // There should have been no error with the transformation
     EXPECT_EQ(errno, 0);
@@ -118,61 +127,20 @@ TEST_F(BrokenLocaleDemo, Errorno_EN_US_UTF8) {
     }
 
     // The transformation should have done something
-    EXPECT_STRNE(a, xfrm_a);
-
-    // Repeat for angstrom
-    const wchar_t* angstrom = L"\xc3\x85";
-
-    // Get the transformed value of angstrom
-    wchar_t xfrm_angstrom[MAXLEN] = {L'\0'};
-    errno = 0;
-    ::wcsxfrm(xfrm_angstrom, angstrom, sizeof xfrm_angstrom/sizeof *xfrm_angstrom);
-
-    // There should have been no error with the transformation
-    EXPECT_EQ(errno, 0);
-    if (errno != 0) {
-        std::cerr << "Error number means: " << ::strerror(errno) << std::endl;;
-    }
-
-    // The transformation should have done something
-    EXPECT_STRNE(angstrom, xfrm_angstrom);
+    EXPECT_STRNE(x, xfrm_x);
 }
 
 
-TEST_F(BrokenLocaleDemo, Errorno_EN_US_UTF_8) {
-    ::setlocale(LC_ALL, "en_US.UTF-8");  // This is a valid locale string
-    const wchar_t* a = L"\xc3\x85";
-
-    // Get the transformed value of "a"
-    wchar_t xfrm_a[MAXLEN] = {L'\0'};
-    ::wcsxfrm(xfrm_a, a, sizeof xfrm_a/sizeof *xfrm_a);
-
-    // There should have been no error with the transformation
-    EXPECT_EQ(errno, 0);
-    if (errno != 0) {
-        std::cerr << "Error number means: " << ::strerror(errno) << std::endl;;
-    }
-
-    // The transformation should have done something
-    EXPECT_STRNE(a, xfrm_a);
-
-    // Repeat for angstrom
-    const wchar_t* angstrom = L"\xc3\x85";
-
-    // Get the transformed value of angstrom
-    wchar_t xfrm_angstrom[MAXLEN] = {L'\0'};
-    errno = 0;
-    ::wcsxfrm(xfrm_angstrom, angstrom, sizeof xfrm_angstrom/sizeof *xfrm_angstrom);
-
-    // There should have been no error with the transformation
-    EXPECT_EQ(errno, 0);
-    if (errno != 0) {
-        std::cerr << "Error number means: " << ::strerror(errno) << std::endl;;
-    }
-
-    // The transformation should have done something
-    EXPECT_STRNE(angstrom, xfrm_angstrom);
-}
+INSTANTIATE_TEST_SUITE_P(
+    LocaleCombos,
+    BrokenLocaleDemoParam,
+    testing::Values(
+        std::make_pair("en_US.UTF8", L"a"),  // invalid locale string
+        std::make_pair("en_US.UTF8", L"\xc3\x85"),
+        std::make_pair("en_US.UTF-8", L"a"),  // valid locale string
+        std::make_pair("en_US.UTF-8", L"\xc3\x85")
+    )
+);
 
 
 int main(int argc, char **argv) {
